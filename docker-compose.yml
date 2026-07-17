@@ -1,0 +1,49 @@
+services:
+  # Base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: explore_tingo_mysql
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-3308}:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-explore_tingo}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - explore_tingo_net
+
+  # Administrador de base de datos phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: explore_tingo_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "${PMA_PORT:-8082}:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ""
+      ALLOW_NO_PASSWORD: "1"
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - explore_tingo_net
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  explore_tingo_net:
+    driver: bridge
