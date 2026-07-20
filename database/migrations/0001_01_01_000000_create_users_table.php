@@ -15,10 +15,26 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            
+            // --- Nuevos campos agregados ---
+            $table->string('surname', 250)->nullable();
+            $table->string('avatar', 250)->nullable();
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->string('phone', 25)->nullable();
+            $table->string('type_document', 50)->nullable();
+            $table->string('n_document', 25)->nullable();
+            $table->string('gender', 1)->nullable()->default('M');
+            $table->unsignedTinyInteger('type_user')->nullable()->comment('1 cliente ecommerce y 2 es usuario admin');
+            $table->unsignedTinyInteger('state')->default(1)->comment('1 es activo y 2 inactivo');
+            // -------------------------------
+
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            
+            // Crea el campo deleted_at que aparece al final
+            $table->softDeletes(); 
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

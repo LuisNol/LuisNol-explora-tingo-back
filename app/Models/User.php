@@ -3,19 +3,20 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements JWTSubject
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-      use HasRoles;
-
+    use HasRoles;
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      *
@@ -25,6 +26,15 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        "surname",
+        "role_id",
+        "phone",
+        "avatar",
+        "type_document",
+        "n_document",
+        "type_user",
+        "gender",
+        "state"
     ];
 
     /**
@@ -50,7 +60,7 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
-     /**
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
@@ -68,5 +78,9 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function role() {
+        return $this->belongsTo(Role::class,"role_id");
     }
 }
