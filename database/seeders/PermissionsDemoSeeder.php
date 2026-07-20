@@ -12,74 +12,58 @@ class PermissionsDemoSeeder extends Seeder
     /**
      * Create the initial roles and permissions.
      */
-    public function run(): void
+     public function run(): void
     {
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // create permissions para roles
+        Permission::create(['guard_name' => 'api','name' => 'dashboard']);
+        // create permissions
         Permission::create(['guard_name' => 'api','name' => 'register_role']);
         Permission::create(['guard_name' => 'api','name' => 'list_role']);
         Permission::create(['guard_name' => 'api','name' => 'edit_role']);
         Permission::create(['guard_name' => 'api','name' => 'delete_role']);
 
-        // create permissions para usuarios
         Permission::create(['guard_name' => 'api','name' => 'register_user']);
         Permission::create(['guard_name' => 'api','name' => 'list_user']);
         Permission::create(['guard_name' => 'api','name' => 'edit_user']);
         Permission::create(['guard_name' => 'api','name' => 'delete_user']);
         
-    
-        // ---------------------------------------------------------
-        // CREATE ROLES AND ASSIGN EXISTING PERMISSIONS
-        // ---------------------------------------------------------
+     //   Permission::create(['guard_name' => 'api','name' => 'register_categorie']);
+      //  Permission::create(['guard_name' => 'api','name' => 'edit_categorie']);
+     //   Permission::create(['guard_name' => 'api','name' => 'delete_categorie']);
+     //   Permission::create(['guard_name' => 'api','name' => 'list_categorie']);
 
-        // Rol 1: Usuario Regular (Solo puede listar usuarios)
-        $role1 = Role::create(['guard_name' => 'api','name' => 'User']);
-        $role1->givePermissionTo('list_user');
+     //   Permission::create(['guard_name' => 'api','name' => 'register_product']);
+     //   Permission::create(['guard_name' => 'api','name' => 'list_product']);
+      //  Permission::create(['guard_name' => 'api','name' => 'edit_product']);
+     //   Permission::create(['guard_name' => 'api','name' => 'delete_product']);
 
-        // Rol 2: Administrador (Puede gestionar usuarios, pero no roles)
-        $role2 = Role::create(['guard_name' => 'api','name' => 'Admin']);
-        $role2->givePermissionTo([
-            'register_user',
-            'list_user',
-            'edit_user',
-            'delete_user'
-        ]);
+      //  Permission::create(['guard_name' => 'api','name' => 'register_client']);
+      //  Permission::create(['guard_name' => 'api','name' => 'list_client']);
+      //  Permission::create(['guard_name' => 'api','name' => 'edit_client']);
+      //  Permission::create(['guard_name' => 'api','name' => 'delete_client']);
 
-        // Rol 3: Super-Admin (Tiene acceso a todo)
+     //   Permission::create(['guard_name' => 'api','name' => 'register_sale']);
+     //   Permission::create(['guard_name' => 'api','name' => 'list_sale']);
+      //  Permission::create(['guard_name' => 'api','name' => 'edit_sale']);
+        //Permission::create(['guard_name' => 'api','name' => 'delete_sale']);
+        
+
+      //  Permission::create(['guard_name' => 'api','name' => 'register_guia_remision']);
+      //  Permission::create(['guard_name' => 'api','name' => 'list_guia_remision']);
+     //   Permission::create(['guard_name' => 'api','name' => 'nota_electronica']);
+      //  Permission::create(['guard_name' => 'api','name' => 'list_nota_electronica']);
+        // create roles and assign existing permissions
+
         $role3 = Role::create(['guard_name' => 'api','name' => 'Super-Admin']);
-        // Nota: Generalmente el Super-Admin obtiene todos los permisos vía una regla Gate::before en AuthServiceProvider,
-        // pero por si acaso, le asignamos todos explícitamente aquí para tu prueba:
-        $role3->givePermissionTo(Permission::all());
+        // gets all permissions via Gate::before rule; see AuthServiceProvider
 
-
-        // ---------------------------------------------------------
-        // CREATE TEST USERS AND ASSIGN ROLES
-        // ---------------------------------------------------------
-
-        // Usuario 1: Super-Admin (Tu usuario original)
-        $superAdmin = \App\Models\User::factory()->create([
-            'name' => 'Nolberto luis ',
+        $user = \App\Models\User::factory()->create([
+            'name' => 'Nolberto Luis Sumaran Pimentel',
             'email' => 'nolberto.sumaran@gmail.com',
             'password' => bcrypt('12345678')
         ]);
-        $superAdmin->assignRole($role3);
-
-        // Usuario 2: Admin
-        $adminUser = \App\Models\User::factory()->create([
-            'name' => 'Administrador de Prueba',
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('12345678')
-        ]);
-        $adminUser->assignRole($role2);
-
-        // Usuario 3: User normal
-        $normalUser = \App\Models\User::factory()->create([
-            'name' => 'Usuario de Prueba',
-            'email' => 'user@gmail.com',
-            'password' => bcrypt('12345678')
-        ]);
-        $normalUser->assignRole($role1);
+        $user->assignRole($role3);
     }
 }
