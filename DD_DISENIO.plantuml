@@ -1,0 +1,97 @@
+@startuml
+' Configuración visual
+hide circle
+skinparam linetype ortho
+skinparam EntityBackgroundColor #F4F6F7
+skinparam EntityBorderColor #2C3E50
+
+entity "usuarios" as usuarios {
+  * id : INT <<PK>>
+  --
+  * tipo_usuario : INT (1=Admin, 2=Cliente)
+  * nombres : VARCHAR(100)
+  * apellidos : VARCHAR(100)
+  * email : VARCHAR(150) <<UNIQUE>>
+  * password : VARCHAR(255)
+  telefono : VARCHAR(20)
+  documento_identidad : VARCHAR(20)
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "complejos" as complejos {
+  * id : INT <<PK>>
+  --
+  * nombre : VARCHAR(150)
+  * direccion : VARCHAR(255)
+  * latitud : DECIMAL(10,8)
+  * longitud : DECIMAL(11,8)
+  telefono_contacto : VARCHAR(20)
+}
+
+entity "canchas" as canchas {
+  * id : INT <<PK>>
+  --
+  * complejo_id : INT <<FK>>
+  * nombre : VARCHAR(100)
+  * tipo_superficie : VARCHAR(50) 
+  * capacidad : INT
+  * estado : VARCHAR(20) (activa, mantenimiento)
+}
+
+entity "servicios" as servicios {
+  * id : INT <<PK>>
+  --
+  * nombre : VARCHAR(100)
+  icono : VARCHAR(100)
+  descripcion : TEXT
+}
+
+entity "cancha_servicio" as cancha_servicio {
+  * cancha_id : INT <<FK>>
+  * servicio_id : INT <<FK>>
+  --
+  (Tabla Pivote M:M)
+}
+
+entity "tarifas" as tarifas {
+  * id : INT <<PK>>
+  --
+  * cancha_id : INT <<FK>>
+  * tipo_tarifa : VARCHAR(50) (hora, dia, evento)
+  * precio : DECIMAL(8,2)
+}
+
+entity "reservas" as reservas {
+  * id : INT <<PK>>
+  --
+  * usuario_id : INT <<FK>>
+  * cancha_id : INT <<FK>>
+  * fecha_reserva : DATE
+  * hora_inicio : TIME
+  * hora_fin : TIME
+  * estado : VARCHAR(20) (pendiente, confirmada, cancelada)
+  * monto_total : DECIMAL(8,2)
+  created_at : TIMESTAMP
+}
+
+entity "pagos" as pagos {
+  * id : INT <<PK>>
+  --
+  * reserva_id : INT <<FK>>
+  * monto_pagado : DECIMAL(8,2)
+  * metodo_pago : VARCHAR(50) (Yape, Plin, Tarjeta, Efectivo)
+  * estado_pago : VARCHAR(20) (completado, fallido, pendiente)
+  * fecha_pago : DATETIME
+}
+
+' Definición de Relaciones
+complejos "1" ||--o{ "N" canchas : contiene
+canchas "1" ||--o{ "N" tarifas : tiene
+canchas "1" ||--o{ "N" cancha_servicio : ofrece
+servicios "1" ||--o{ "N" cancha_servicio : pertenece
+usuarios "1" ||--o{ "N" reservas : realiza
+canchas "1" ||--o{ "N" reservas : es reservada
+reservas "1" ||--o| "1" pagos : genera
+
+@enduml
