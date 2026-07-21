@@ -14,6 +14,7 @@ use App\Http\Controllers\User\UserController;
 Route::group([
     'prefix' => 'auth'
 ], function ($router) {
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 });
 Route::group([

@@ -31,7 +31,8 @@ class AuthController extends Controller
         $user = new User;
         $user->name = request()->name;
         $user->email = request()->email;
-        $user->password = bcrypt(request()->password);
+        $user->password = request()->password;
+        $user->type_user = request()->type_user ?? 1;
         $user->save();
   
         return response()->json($user, 201);
@@ -95,7 +96,8 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
-        $permissions = auth("api")->user()->getAllPermissions()->map(function($permission) {
+        $user = auth("api")->user();
+        $permissions = $user->getAllPermissions()->map(function($permission) {
             return $permission->name;
         });
         return response()->json([
@@ -103,14 +105,15 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth("api")->factory()->getTTL() * 60,
             "user" => [
-                "full_name" => auth("api")->user()->name,
-                "email" => auth("api")->user()->email,
-                "avatar" => auth("api")->user()->avatar ? Storage::disk('public')->url(auth("api")->user()->avatar) : null,
-                "role" => [
-                    "id" => auth("api")->user()->role->id,
-                    "name" => auth("api")->user()->role->name,
-                ],
+                "full_name" => $user->name,
+                "email" => $user->email,
+                "avatar" => $user->avatar ? Storage::disk('public')->url($user->avatar) : null,
+                "role" => $user->role_id ? [
+                    "id" => $user->role->id,
+                    "name" => $user->role->name,
+                ] : null,
                 "permissions" => $permissions,
+                "type_user" => $user->type_user,
             ],
         ]);
     }

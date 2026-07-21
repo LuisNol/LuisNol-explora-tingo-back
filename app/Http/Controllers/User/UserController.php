@@ -20,9 +20,10 @@ class UserController extends Controller
     {
         // "/users?search=jose"
         $search = $request->get("search");
-        $users = User::where(DB::raw("CONCAT(users.name,' ',
-                                IFNULL(users.surname,''),' ',IFNULL(users.phone,''),' ',
-                            users.email,' ',IFNULL(users.n_document,''))"),"like","%".$search."%")
+        $users = User::where("type_user",2)
+                    ->where(DB::raw("CONCAT(users.name,' ',
+                                    IFNULL(users.surname,''),' ',IFNULL(users.phone,''),' ',
+                                users.email,' ',IFNULL(users.n_document,''))"),"like","%".$search."%")
                     ->orderBy("id","desc")->paginate(25);
         $roles = Role::all();
         return response()->json([
@@ -61,6 +62,8 @@ class UserController extends Controller
         if($request->password){
             $request->request->add(["password" => bcrypt($request->password)]);
         }
+
+        $request->merge(["type_user" => $request->type_user ?? 2]);
 
         $user = User::create($request->all());
         $role = Role::findOrFail($request->role_id);
