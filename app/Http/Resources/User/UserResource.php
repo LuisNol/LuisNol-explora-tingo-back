@@ -4,6 +4,7 @@ namespace App\Http\Resources\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class UserResource extends JsonResource
 {
@@ -26,7 +27,7 @@ class UserResource extends JsonResource
                 "name" => $this->resource->role->name
             ],
             "phone" => $this->resource->phone,
-            "avatar" => $this->resource->avatar ? env("APP_URL")."storage/".$this->resource->avatar : NULL,//"http://127.0.0.1:8000/storage/public/users/fsdfsdfsdfsdfdsp.png"
+            "avatar" => $this->resource->avatar ? Storage::disk('public')->url($this->resource->avatar) : NULL,
             "type_document" => $this->resource->type_document,
             "n_document"  => $this->resource->n_document,
             "gender" => $this->resource->gender,

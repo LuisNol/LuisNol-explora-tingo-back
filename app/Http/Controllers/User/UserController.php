@@ -44,7 +44,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         
-        $is_exits_user = User::where("email",$request->email)->first();
+        $is_exits_user = User::withTrashed()->where("email",$request->email)->first();
 
         if($is_exits_user){
             return response()->json([
@@ -54,7 +54,7 @@ class UserController extends Controller
         }
 
         if($request->hasFile("imagen")){
-            $path = Storage::putFile("users",$request->file("imagen"));
+            $path = Storage::disk("public")->putFile("users",$request->file("imagen"));
             $request->request->add(["avatar" => $path]);
         }
 
@@ -86,7 +86,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $is_exits_user = User::where("id","<>",$id)->where("email",$request->email)->first();
+        $is_exits_user = User::withTrashed()->where("id","<>",$id)->where("email",$request->email)->first();
 
         if($is_exits_user){
             return response()->json([
@@ -101,7 +101,7 @@ class UserController extends Controller
             if($user->avatar){
                 Storage::delete($user->avatar);
             }
-            $path = Storage::putFile("users",$request->file("imagen"));
+            $path = Storage::disk("public")->putFile("users",$request->file("imagen"));
             $request->request->add(["avatar" => $path]);
         }
 

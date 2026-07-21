@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 // use Validator;
   
   
@@ -104,7 +105,7 @@ class AuthController extends Controller
             "user" => [
                 "full_name" => auth("api")->user()->name,
                 "email" => auth("api")->user()->email,
-                "avatar" => env("APP_URL")."storage/".auth("api")->user()->avatar,
+                "avatar" => auth("api")->user()->avatar ? Storage::disk('public')->url(auth("api")->user()->avatar) : null,
                 "role" => [
                     "id" => auth("api")->user()->role->id,
                     "name" => auth("api")->user()->role->name,
